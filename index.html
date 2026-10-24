@@ -310,18 +310,37 @@ document.getElementById("copyBtn").addEventListener("click",()=>{
 </script>
 
 <script>
-// Standalone (GitHub Pages): no shared store, so Submit downloads a text file instead
+// Standalone (GitHub Pages): answers go to the Whyy So Serious n8n backend
 if(!window.claude){
-  const b=document.getElementById("submitBtn");
-  b.textContent="Download my answers";
-  document.querySelector("footer.send .hint").textContent="Your draft is saved on this device, so you can close the page and come back. When you're done, download or copy your answers and send them to the Whyy So Serious team on WhatsApp or email.";
-  const nb=b.cloneNode(true); b.replaceWith(nb);
-  nb.addEventListener("click",()=>{
-    const blob=new Blob([asText()],{type:"text/plain"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob); a.download="Mystic-Lotus-brief-answers.txt";
-    document.body.appendChild(a); a.click(); a.remove();
-    say("Downloaded. Send the file to the Whyy So Serious team on WhatsApp or email.",true);
+  const HOOK="https://ayushjoshi08.app.n8n.cloud/webhook/mystic-lotus-brief";
+  let sending=false, again=false, tmr=null, status="draft";
+  try{ if(localStorage.getItem(KEY+"-status")==="submitted") status="submitted"; }catch(e){}
+  function countAnswered(a){ return ALL.filter(q=>answered(q,a)).length; }
+  async function send(){
+    if(sending){ again=true; return null; }
+    sending=true; again=false;
+    const d=collect();
+    try{
+      const r=await fetch(HOOK,{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({response_id:rid,status,answered_count:countAnswered(d.answers),respondent:d.respondent,answers:d.answers})});
+      if(!r.ok) throw new Error(r.status);
+      setState(status==="submitted"?"Submitted":"Saved",true);
+      return true;
+    }catch(e){ setState("Saved on this device. Will retry"); return false; }
+    finally{ sending=false; if(again){ clearTimeout(tmr); tmr=setTimeout(send,3000);} }
+  }
+  setState("Answers save as you type",true);
+  const later=()=>{ setState("Saving…"); clearTimeout(tmr); tmr=setTimeout(send,4000); };
+  document.addEventListener("input",e=>{ if(e.target.closest(".wrap")&&e.target.id!=="copyBox") later(); });
+  document.addEventListener("change",e=>{ if(e.target.type==="radio") later(); });
+  const old=document.getElementById("submitBtn"), b=old.cloneNode(true); old.replaceWith(b);
+  b.addEventListener("click",async()=>{
+    b.disabled=true; clearTimeout(tmr); saveLocal(); status="submitted";
+    try{ localStorage.setItem(KEY+"-status","submitted"); }catch(e){}
+    for(let i=0;i<30&&sending;i++) await new Promise(r=>setTimeout(r,150));
+    const ok=await send(); b.disabled=false;
+    if(ok) say("Thank you. Your answers reached the Whyy So Serious team. You can edit and submit again anytime.",true);
+    else say("We couldn't send this right now. Check your internet and tap Submit again, or tap \"Copy answers\" and send them to us on WhatsApp or email.");
   });
 }
 </script>
