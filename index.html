@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Mystic Lotus Client Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: one calm reading column; sticky progress strip; ten numbered sections in the order a strategist would brief them */
+:root{
+  --bg:#F7F5F9; --surface:#FFFFFF; --ink:#231B2A; --muted:#6B6275; --line:#E4DEEA;
+  --accent:#A3305F; --accent-soft:#F6E6EE; --note:#F1EEF6; --ok:#2F7A55;
+  --display:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#16121A; --surface:#1F1925; --ink:#EEE8F3; --muted:#A79DB2; --line:#352C3D;
+  --accent:#E07AA4; --accent-soft:#3A2230; --note:#251E2C; --ok:#6CC79A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#16121A; --surface:#1F1925; --ink:#EEE8F3; --muted:#A79DB2; --line:#352C3D;
+  --accent:#E07AA4; --accent-soft:#3A2230; --note:#251E2C; --ok:#6CC79A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding-block:40px 80px}
+header.intro{display:grid;gap:12px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font:600 clamp(34px,6vw,48px)/1.05 var(--display);margin:0;text-wrap:balance}
+h1 em{font-style:italic;font-weight:500;color:var(--accent)}
+.lede{color:var(--muted);margin:0;max-width:60ch}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:8px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+.track{flex:1;height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);transition:width .3s}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.status{font-size:12px;color:var(--muted);white-space:nowrap}
+.status.ok{color:var(--ok)}
+section{padding-block:36px 8px;display:grid;gap:22px}
+.sh{display:flex;gap:14px;align-items:baseline}
+.num{font:500 italic 22px var(--display);color:var(--accent);font-variant-numeric:tabular-nums;min-width:28px}
+h2{font:600 28px/1.15 var(--display);margin:0}
+.q{display:grid;gap:8px;min-width:0}
+.q label.ql,.q .ql{font-weight:600;font-size:15px;line-height:1.45}
+.hint{font-size:13px;color:var(--muted);margin:0}
+.known{font-size:12px;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 10px;justify-self:start;font-weight:500}
+.note{background:var(--note);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.note a{color:var(--accent);word-break:break-all}
+textarea,input[type=text]{width:100%;font:15px/1.5 var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+textarea:focus,input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.field{display:grid;gap:4px}
+.field span{font-size:13px;color:var(--muted)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14px;cursor:pointer}
+.opts input{accent-color:var(--accent)}
+.opts label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opts label:focus-within{outline:2px solid var(--accent)}
+footer.send{margin-top:40px;padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:12px;display:grid;gap:14px}
+footer h3{font:600 24px var(--display);margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+button{font:600 15px var(--body);border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid var(--accent)}
+button.primary{background:var(--accent);color:var(--surface)}
+button.ghost{background:transparent;color:var(--accent)}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.msg{font-size:14px;margin:0}
+.msg.ok{color:var(--ok)}
+#copyBox{min-height:160px;font-size:13px}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="intro">
+    <div class="eyebrow">Mystic Lotus × Whyy So Serious</div>
+    <h1>B&amp;C Miracle Method <em>masterclass brief</em></h1>
+    <p class="lede">Help us plan your ads and funnel. Share whatever you have: partial answers are fine, and if a voice note is easier, send it on WhatsApp and write "sent voice note" in the box. Where we already found something on your landing pages, we've filled it in. Just correct anything that's wrong.</p>
+    <div class="who">
+      <label class="field"><span>Your name</span><input type="text" id="r_name" autocomplete="name"></label>
+      <label class="field"><span>Role</span><input type="text" id="r_role"></label>
+      <label class="field"><span>Phone / WhatsApp</span><input type="text" id="r_phone" autocomplete="tel"></label>
+    </div>
+  </header>
+
+  <div class="bar" role="status">
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <span class="count" id="count">0 of 0 answered</span>
+    <span class="status" id="saveState">Draft kept on this device</span>
+  </div>
+
+  <form id="form" novalidate></form>
+
+  <footer class="send">
+    <h3>Send your answers</h3>
+    <p class="hint">You can submit now and come back later. Submitting again updates the same response.</p>
+    <div class="btns">
+      <button type="button" class="primary" id="submitBtn">Submit answers</button>
+      <button type="button" class="ghost" id="copyBtn">Copy answers to send on WhatsApp or email</button>
+    </div>
+    <p class="msg" id="submitMsg" hidden></p>
+    <textarea id="copyBox" readonly hidden aria-label="Your answers as text"></textarea>
+  </footer>
+</div>
+
+<script>
+const S = [
+ {t:"Business goals & challenges", q:[
+  {id:"g_challenges",l:"What are the three biggest challenges you face with webinar marketing right now?"},
+  {id:"g_targets",l:"Targets we noted. Please confirm or correct.",pre:"Ad budget: ₹2.5–3 lakh\nCost per registration: ₹1,000 or less\nLive attendance: 50%+ of registrants stay for most of the call\nROAS: 3.5 or more"},
+  {id:"g_roas",l:"Is the 3.5 ROAS target based on the ₹99 ticket alone, or including the programme sold after it?",opts:["₹99 ticket only","Including the backend sale","Not sure"]},
+  {id:"g_success",l:"Six months from now, what would make this partnership a clear success for you?"}
+ ]},
+ {t:"Offers & economics", q:[
+  {id:"o_list",l:"Everything Mystic Lotus offers: workshops, masterclasses, healing sessions, courses, programmes, products.",pre:"B&C Miracle Method masterclass – for healers\nB&C Miracle Method masterclass – for non-healers\n"},
+  {id:"o_backend",l:"What is sold after the ₹99 masterclass?",hint:"Name, price, format (live or recorded, duration, certification) and how people enrol."},
+  {id:"o_margin",l:"Roughly, what does each main offer cost you to deliver, and what margin does it make?"},
+  {id:"o_rev",l:"Which offers bring in the most revenue, and which do you want to push in the next three months?"},
+  {id:"o_conv",l:"What percentage of attendees buy the post-masterclass offer?",hint:"A range or your best estimate is fine."}
+ ]},
+ {t:"Trainers & what sets you apart", q:[
+  {id:"t_brenda",l:"Brenda Ganwani: background, qualifications, years of experience.",pre:"Co-founder of the B&C Miracle Method. 2023 World Humanity & Peace Award. Has trained hundreds of practitioners. Works with Reiki, Access Bars, Spiritual Response Therapy, Life Alignment, Soul Healing, Kinesiology, Lenormand, Astrology, Pranic Healing, Crystal Healing, Akashic Reading, Shamanic Journey, Matrix Energetics.\n\nFormal qualifications and years of practice: "},
+  {id:"t_charu",l:"Charu Mathur: background, qualifications, years of experience.",pre:"Co-founder of the B&C Miracle Method. Works with Theta Healing, Akashic Reading, Lenormand, Shamanic Healing, Reiki, Spiritual Response Therapy. Works with clients of all ages, including non-verbal cases.\n\nFormal qualifications and years of practice: "},
+  {id:"t_stats",l:"Your healer page says 1,000+ practitioners trained, 29+ years of experience and 11–12+ countries. Whose 29 years is this, and are these numbers current?"},
+  {id:"t_edge",l:"In your own words, what makes the Miracle Method different from other healing courses?",hint:"From your pages: a copyrighted, tool-based technique using three focused questions and the ideomotor response; works remotely with just a name; fits with any healing method; quick to learn. Mission: a healer in every home."},
+  {id:"t_claims",l:"Which testimonials and claims are approved for ads, and which should we avoid?",hint:"Meta restricts health and income promises, so ads will describe the experience rather than outcomes like pain relief or money."}
+ ]},
+ {t:"Audience", q:[
+  {id:"a_ideal",l:"Your ideal participant. Please confirm or correct.",pre:"Women, 35–55, English-speaking, India, cities with 1 million+ population.\nNon-healer page: people with pain, stress, money blocks, or feeling stuck.\nHealer page: practising healers, coaches and therapists."},
+  {id:"a_intl",l:"Should we also run ads outside India? If yes, which countries?",hint:"Your page has a $2.99 option, so we wanted to check."},
+  {id:"a_interests",l:"What do your best participants have in common? Professions, interests, life stage, what brought them to you."},
+  {id:"a_healers",l:"Who converts better into the paid programme, healers or non-healers? How are they different?"},
+  {id:"a_cities",l:"Which cities or audience groups have worked best so far?"},
+  {id:"a_repeat",l:"Which kind of customer buys most often or comes back for more?"}
+ ]},
+ {t:"Past workshops & campaigns", q:[
+  {id:"p_numbers",l:"Numbers from previous workshops.",hint:"Per workshop if possible: date, ad spend, registrations, attended live, buyers, revenue. A sheet or screenshot link works too."},
+  {id:"p_best",l:"Which campaigns, audiences, creatives or messages worked best? What clearly didn't?"},
+  {id:"p_noshow",l:"Why do people miss the live session, or attend and not buy?"},
+  {id:"p_quality",l:"How would you rate lead quality, and what are the common reasons leads don't convert?"},
+  {id:"p_channels",l:"Which marketing channels have worked best so far? (Meta, Google, YouTube, WhatsApp, referrals, etc.)"}
+ ]},
+ {t:"Customer journey & sales", q:[
+  {id:"j_after",l:"What happens after someone pays ₹99?",hint:"Thank-you page, confirmation message, reminders, how they get the Zoom link."},
+  {id:"j_follow",l:"How do you follow up with participants before and after the masterclass?"},
+  {id:"j_sales",l:"Who sells the next programme: during the masterclass, a separate sales team, or both?"},
+  {id:"j_speed",l:"How quickly are interested people contacted, and how do you decide who is a good fit?"},
+  {id:"j_lists",l:"Roughly how big are your email list, WhatsApp list, and past attendee/customer database?"}
+ ]},
+ {t:"Landing pages, creatives & brand", q:[
+  {id:"l_lps",l:"Can we build a new landing page for ads, or must we use the current ones?",note:'Current pages:<br>Healers: <a href="https://masterclass.themysticlotus.com/bnc-miracle-masterclass-healer-ml/" target="_blank" rel="noopener">masterclass.themysticlotus.com/bnc-miracle-masterclass-healer-ml</a><br>Non-healers: <a href="https://masterclass.themysticlotus.com/bnc-masterclass-ml-rgst/" target="_blank" rel="noopener">masterclass.themysticlotus.com/bnc-masterclass-ml-rgst</a>',opts:["Yes, build a new page","Edit the current pages","Use current pages as they are"]},
+  {id:"l_assets",l:"What material can you share?",hint:"Promo videos, original photos of Brenda and Charu, video testimonials, past ad creatives. A Google Drive link is easiest."},
+  {id:"l_creative",l:"Which past creatives, hooks or ad copy performed best?"},
+  {id:"l_brand",l:"Any brand guidelines, words you like to use, or words we must avoid?"},
+  {id:"l_approver",l:"Who approves ads and landing page changes? Name and WhatsApp number."}
+ ]},
+ {t:"Tracking & tools", q:[
+  {id:"k_pixel",l:"Are Meta Pixel and Conversions API set up?",opts:["Yes, working","Set up, not sure it works","No","Don't know"]},
+  {id:"k_ga4",l:"Is Google Analytics 4 or other conversion tracking set up?",opts:["Yes, working","Set up, not sure it works","No","Don't know"]},
+  {id:"k_tools",l:"Which tools do you use for landing pages, payments, webinars, CRM and lead management?"},
+  {id:"k_connected",l:"Can you see registrations, attendance and sales together for the same person, or are they in separate places?"},
+  {id:"k_access",l:"Who handles technical changes and can give us access? Name and contact."}
+ ]},
+ {t:"Follow-up check", q:[
+  {id:"f_reminders",l:"What WhatsApp and email reminders go out before the live session?",hint:"Your page mentions a welcome email and a VIP WhatsApp group. When do reminders go out (e.g. 1 day, 1 hour, 10 minutes before)?"},
+  {id:"f_calls",l:"Do you call attendees after the masterclass?",opts:["Yes, every time","Sometimes","No"]},
+  {id:"f_list",l:"Can you share a list of past attendees and customers (for audiences and retargeting)?",opts:["Yes","Yes, after some cleanup","No"]},
+  {id:"f_owner",l:"Is one person responsible for following up with leads? Who?"},
+  {id:"f_process",l:"Describe your sales process from first follow-up to payment, and how you track conversions."}
+ ]},
+ {t:"Competition & positioning", q:[
+  {id:"c_comp",l:"Who are your main competitors, or two or three trainers or brands you admire?"},
+  {id:"c_diff",l:"Where do you see the biggest chance for Mystic Lotus to stand out?"}
+ ]}
+];
+
+const form = document.getElementById("form");
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+form.innerHTML = S.map((sec,i)=>`<section aria-labelledby="h${i}"><div class="sh"><span class="num">${String(i+1).padStart(2,"0")}</span><h2 id="h${i}">${sec.t}</h2></div>${sec.q.map(q=>{
+  let h = `<div class="q">`;
+  if(q.opts){
+    h += `<div class="ql" id="lab_${q.id}">${esc(q.l)}</div>`;
+    if(q.note) h += `<div class="note">${q.note}</div>`;
+    if(q.hint) h += `<p class="hint">${esc(q.hint)}</p>`;
+    h += `<div class="opts" role="radiogroup" aria-labelledby="lab_${q.id}">${q.opts.map((o,k)=>`<label><input type="radio" name="${q.id}" id="${q.id}_${k}" value="${esc(o)}">${esc(o)}</label>`).join("")}</div>`;
+    h += `<textarea id="${q.id}_note" aria-label="Notes for: ${esc(q.l)}" placeholder="Anything to add (optional)" style="min-height:56px"></textarea>`;
+  } else {
+    if(q.pre) h += `<span class="known">Pre-filled from your pages. Edit if anything's wrong</span>`;
+    h += `<label class="ql" for="${q.id}">${esc(q.l)}</label>`;
+    if(q.note) h += `<div class="note">${q.note}</div>`;
+    if(q.hint) h += `<p class="hint">${esc(q.hint)}</p>`;
+    h += `<textarea id="${q.id}">${q.pre?esc(q.pre):""}</textarea>`;
+  }
+  return h + `</div>`;
+}).join("")}</section>`).join("");
+
+const ALL = S.flatMap(s=>s.q);
+const KEY = "ml-brief-v1";
+function collect(){
+  const a = {};
+  ALL.forEach(q=>{
+    if(q.opts){
+      const c = form.querySelector(`input[name="${q.id}"]:checked`);
+      a[q.id] = {choice: c?c.value:"", note: document.getElementById(q.id+"_note").value};
+    } else a[q.id] = document.getElementById(q.id).value;
+  });
+  return {respondent:{name:r_name.value.trim(),role:r_role.value.trim(),phone:r_phone.value.trim()}, answers:a};
+}
+function apply(d){
+  if(!d) return;
+  if(d.respondent){r_name.value=d.respondent.name||"";r_role.value=d.respondent.role||"";r_phone.value=d.respondent.phone||"";}
+  const a = d.answers||{};
+  ALL.forEach(q=>{
+    if(!(q.id in a)) return;
+    if(q.opts){
+      const v=a[q.id]||{};
+      form.querySelectorAll(`input[name="${q.id}"]`).forEach(r=>r.checked=(r.value===v.choice));
+      document.getElementById(q.id+"_note").value=v.note||"";
+    } else document.getElementById(q.id).value=a[q.id]||"";
+  });
+}
+function answered(q,a){ const v=a[q.id]; return q.opts ? !!(v.choice||v.note.trim()) : !!v.trim(); }
+function progress(){
+  const {answers}=collect(); const n=ALL.filter(q=>answered(q,answers)).length;
+  document.getElementById("count").textContent=`${n} of ${ALL.length} answered`;
+  document.getElementById("fill").style.width=(n/ALL.length*100)+"%";
+}
+function asText(){
+  const d=collect(), r=d.respondent;
+  let t=`MYSTIC LOTUS – MASTERCLASS BRIEF\nFrom: ${r.name||"-"}${r.role?" ("+r.role+")":""}${r.phone?" · "+r.phone:""}\n`;
+  S.forEach((s,i)=>{ t+=`\n== ${i+1}. ${s.t} ==\n`;
+    s.q.forEach(q=>{ const v=d.answers[q.id];
+      const ans=q.opts?[v.choice,v.note.trim()].filter(Boolean).join(" — "):v.trim();
+      t+=`\nQ: ${q.l}\nA: ${ans||"(not answered)"}\n`; }); });
+  return t;
+}
+
+// Local draft (per device)
+let rid;
+try{ const saved=JSON.parse(localStorage.getItem(KEY)||"null"); if(saved){apply(saved.data); rid=saved.rid;} }catch(e){}
+if(!rid) rid = "r" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+function saveLocal(){ try{localStorage.setItem(KEY,JSON.stringify({rid,data:collect()}));}catch(e){} }
+progress();
+
+// Shared store
+let db=null, canWrite=null, dirty=false, writing=false, timer=null;
+const st=document.getElementById("saveState");
+function setState(txt,ok){ st.textContent=txt; st.classList.toggle("ok",!!ok); }
+async function push(status){
+  if(!db||canWrite===false) return false;
+  if(writing){ dirty=true; return false; }
+  writing=true; dirty=false;
+  try{
+    await db.doc("responses/"+rid).set({...collect(), status, updatedAt:new Date().toISOString()});
+    setState(status==="submitted"?"Submitted":"Saved",true);
+    return true;
+  }catch(e){
+    if(e&&e.code==="invalid_argument"){ canWrite=false; setState("Draft kept on this device"); }
+    else setState("Couldn't save. Will retry");
+    return false;
+  }finally{
+    writing=false;
+    if(dirty) schedule();
+  }
+}
+let lastStatus="draft";
+function schedule(){ clearTimeout(timer); timer=setTimeout(()=>push(lastStatus==="submitted"?"submitted":"draft"),2500); }
+function onChange(){ progress(); saveLocal(); if(db&&canWrite!==false){ setState("Saving…"); schedule(); } }
+document.addEventListener("input",e=>{ if(e.target.closest(".wrap")&&e.target.id!=="copyBox") onChange(); });
+document.addEventListener("change",e=>{ if(e.target.type==="radio") onChange(); });
+
+(async()=>{
+  try{
+    const [d,u]=await Promise.all([window.claude?.use("db"),window.claude?.use("user")]);
+    db=d||null;
+    if(u){ const c=await u.can("data.write"); if(c===false) canWrite=false; }
+    if(db&&canWrite!==false){
+      const snap=await db.doc("responses/"+rid).get().catch(()=>null);
+      if(snap&&snap.exists){ const v=snap.data(); lastStatus=v.status||"draft"; }
+      setState("Answers save as you type",true);
+    }
+  }catch(e){}
+})();
+
+const msg=document.getElementById("submitMsg");
+function say(t,ok){ msg.hidden=false; msg.textContent=t; msg.classList.toggle("ok",!!ok); }
+document.getElementById("submitBtn").addEventListener("click",async ev=>{
+  const b=ev.currentTarget; b.disabled=true; saveLocal();
+  lastStatus="submitted"; clearTimeout(timer);
+  let ok=false;
+  if(db&&canWrite!==false){
+    for(let i=0;i<20&&writing;i++) await new Promise(r=>setTimeout(r,150));
+    ok=await push("submitted");
+  }
+  b.disabled=false;
+  if(ok) say("Thank you. Your answers reached the Whyy So Serious team. You can edit and submit again anytime.",true);
+  else { say("We couldn't send this from your browser. Tap \"Copy answers\" below and paste them to us on WhatsApp or email. Your draft is kept on this device."); }
+});
+document.getElementById("copyBtn").addEventListener("click",()=>{
+  const t=asText(), box=document.getElementById("copyBox");
+  box.value=t;
+  const fallback=()=>{ box.hidden=false; box.focus(); box.select(); say("Select all the text below and copy it.");};
+  try{
+    navigator.clipboard.writeText(t).then(()=>{ say("Copied. Paste it into WhatsApp or email to the Whyy So Serious team.",true); box.hidden=true; },fallback);
+  }catch(e){ fallback(); }
+});
+</script>
+
+<script>
+// Standalone (GitHub Pages): no shared store, so Submit downloads a text file instead
+if(!window.claude){
+  const b=document.getElementById("submitBtn");
+  b.textContent="Download my answers";
+  document.querySelector("footer.send .hint").textContent="Your draft is saved on this device, so you can close the page and come back. When you're done, download or copy your answers and send them to the Whyy So Serious team on WhatsApp or email.";
+  const nb=b.cloneNode(true); b.replaceWith(nb);
+  nb.addEventListener("click",()=>{
+    const blob=new Blob([asText()],{type:"text/plain"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob); a.download="Mystic-Lotus-brief-answers.txt";
+    document.body.appendChild(a); a.click(); a.remove();
+    say("Downloaded. Send the file to the Whyy So Serious team on WhatsApp or email.",true);
+  });
+}
+</script>
+</body>
+</html>
